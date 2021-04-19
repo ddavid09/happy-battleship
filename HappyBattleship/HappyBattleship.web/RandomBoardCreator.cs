@@ -32,8 +32,8 @@ namespace HappyBattleship.web
             Position beginPosition;
             Position endPosition;
 
-            var beginPositionX = _random.Next(1, 11);
-            var beginPositionY = _random.Next(1, 11);
+            var beginPositionX = _random.Next(10);
+            var beginPositionY = _random.Next(10);
 
             beginPosition = new Position(beginPositionX, beginPositionY);
 
@@ -59,16 +59,16 @@ namespace HappyBattleship.web
 
         private void NormalizePositions(Position beginPosition, Position endPosition)
         {
-            if (endPosition.X > 10)
+            if (endPosition.X >= 10)
             {
-                var offset = endPosition.X - 10;
+                var offset = endPosition.X - 9;
                 endPosition.X -= offset;
                 beginPosition.X -= offset;
             }
 
-            if (endPosition.Y > 10)
+            if (endPosition.Y >= 10)
             {
-                var offset = endPosition.Y - 10;
+                var offset = endPosition.Y - 9;
                 endPosition.Y -= offset;
                 beginPosition.Y -= offset;
             }
@@ -78,11 +78,18 @@ namespace HappyBattleship.web
         {
             var result = new List<Position>();
 
-            for (var x = begin.X; x <= end.X; x++)
+            if (begin.X == end.X)
             {
-                for (var y = begin.Y; x < end.Y; x++)
+                for (var y = begin.Y; y < end.Y; y++)
                 {
-                    result.Add(new Position(x, y));
+                    result.Add(new Position(begin.X, y));
+                }
+            }
+            else if (begin.Y == end.Y)
+            {
+                for (var x = begin.X; x < end.X; x++)
+                {
+                    result.Add(new Position(x, begin.Y));
                 }
             }
 

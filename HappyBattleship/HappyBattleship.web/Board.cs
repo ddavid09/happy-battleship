@@ -13,9 +13,9 @@ namespace HappyBattleship.web
         {
             _positions = new Position[10, 10];
 
-            for (var x = 1; x <= 10; x++)
+            for (var x = 0; x < 10; x++)
             {
-                for (var y = 1; y <= 10; y++)
+                for (var y = 0; y < 10; y++)
                 {
                     _positions[x, y] = new Position(x, y);
                 }
@@ -38,8 +38,8 @@ namespace HappyBattleship.web
 
                 positionToCover.State = PositionState.Covered;
                 ship.Coordinates[i] = positionToCover;
-                _ships.Add(ship);
             }
+            _ships.Add(ship);
         }
 
         public bool CanPostShip(Ship ship)
