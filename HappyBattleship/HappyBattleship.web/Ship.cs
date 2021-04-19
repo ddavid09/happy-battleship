@@ -13,10 +13,10 @@ namespace HappyBattleship.web
         }
         public List<Position> Coordinates { get; set; }
 
-        public Ship(ShipClass shipClass, IEnumerable<Position> coordinates)
+        public Ship(ShipClass shipClass, List<Position> coordinates)
         {
             Class = shipClass;
-            Coordinates = coordinates.ToList();
+            Coordinates = coordinates;
             Size = Utils.InferShipSize(shipClass);
         }
 
