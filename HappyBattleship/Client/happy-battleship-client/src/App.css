@@ -1,0 +1,38 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 3rem;
+  background-color: #dfdfdf;
+}
+
+.board {
+  display: grid;
+  margin: 2rem;
+  grid-template-columns: repeat(11, 3rem);
+}
+
+.board-square {
+  font-size: 12px;
+  border: 1px solid black;
+  width: 3rem;
+  height: 3rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.board-square p {
+  margin: 0;
+  padding: 0;
+}
+
+.board-header {
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.boards {
+  display: flex;
+}

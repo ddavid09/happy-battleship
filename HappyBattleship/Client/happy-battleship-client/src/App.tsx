@@ -31,7 +31,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div className="boards">
       <Board positions={leftBoardPositions} />
       <Board positions={rightBoardPositions} />
     </div>

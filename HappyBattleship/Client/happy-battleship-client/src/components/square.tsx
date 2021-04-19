@@ -6,10 +6,10 @@ interface SquareProps {
 
 const Square = ({ position }: SquareProps) => {
   return (
-    <div>
-      <h4>positionX: {position.x}</h4>
-      <h4>positionY: {position.y}</h4>
-      <h4>state: {position.state}</h4>
+    <div className="board-square">
+      <p>X: {position.x}</p>
+      <p>Y: {position.y}</p>
+      <p>s: {position.state}</p>
     </div>
   );
 };
