@@ -4,6 +4,7 @@
     {
         Initial,
         Missed,
-        Hit
+        Hit,
+        Covered
     }
 }
