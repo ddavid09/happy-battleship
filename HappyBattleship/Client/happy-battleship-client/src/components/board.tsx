@@ -26,9 +26,9 @@ const Board = ({ hub, side }: BoardProps) => {
           } else {
             return (
               <Square
-                key={generateKey(rowIndex - 1, colIndex)}
+                key={generateKey(rowIndex, colIndex - 1)}
                 x={rowIndex}
-                y={colIndex}
+                y={colIndex - 1}
                 state={0}
               />
             );
