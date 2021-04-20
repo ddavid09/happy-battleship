@@ -3,8 +3,8 @@
     public enum PositionState
     {
         Initial,
+        Covered,
         Missed,
-        Hit,
-        Covered
+        Hit
     }
 }

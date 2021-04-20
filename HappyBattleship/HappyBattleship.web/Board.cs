@@ -7,7 +7,7 @@ namespace HappyBattleship.web
     public class Board
     {
         private List<Ship> _ships;
-        private Position[,] _positions;
+        private readonly Position[,] _positions;
 
         public Board()
         {
@@ -22,6 +22,11 @@ namespace HappyBattleship.web
             }
 
             _ships = new List<Ship>();
+        }
+
+        public Position[] GetShipsPositions()
+        {
+            return _ships.SelectMany(ship => ship.Coordinates).ToArray();
         }
 
         public void PostShip(Ship ship)
