@@ -8,8 +8,10 @@ const BoardHeader = ({ title }: BoardHeaderProps) => {
   return (
     <>
       <div className="board-header-title">{title}</div>
-      {letters.map((l) => (
-        <div className="board-square board-header">{l}</div>
+      {letters.map((l, i) => (
+        <div key={i} className="board-square board-header">
+          {l}
+        </div>
       ))}
     </>
   );

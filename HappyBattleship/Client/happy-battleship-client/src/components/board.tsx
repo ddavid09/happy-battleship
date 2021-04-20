@@ -1,5 +1,4 @@
 import { HubConnection } from "@microsoft/signalr";
-import { Position } from "../models/position";
 import BoardHeader from "./boardHeader";
 import RowHeader from "./rowHeader";
 import Square from "./square";
@@ -12,6 +11,10 @@ interface BoardProps {
 const BOARD_ROWS = 10;
 const BOARD_COLS = 11;
 
+const generateKey = (rowIndex: number, colIndex: number) => {
+  return "" + rowIndex + colIndex;
+};
+
 const Board = ({ hub, side }: BoardProps) => {
   return (
     <div className="board">
@@ -19,9 +22,16 @@ const Board = ({ hub, side }: BoardProps) => {
       {[...Array(BOARD_ROWS)].map((_, rowIndex) =>
         [...Array(BOARD_COLS)].map((_, colIndex) => {
           if (colIndex === 0) {
-            return <RowHeader rowIndex={rowIndex} />;
+            return <RowHeader key={colIndex} rowIndex={rowIndex} />;
           } else {
-            return <Square x={rowIndex} y={colIndex} state={0} />;
+            return (
+              <Square
+                key={generateKey(rowIndex - 1, colIndex)}
+                x={rowIndex}
+                y={colIndex}
+                state={0}
+              />
+            );
           }
         })
       )}

@@ -1,5 +1,3 @@
-import { Position } from "../models/position";
-
 interface SquareProps {
   x: number;
   y: number;
