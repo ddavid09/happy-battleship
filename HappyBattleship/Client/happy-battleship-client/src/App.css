@@ -33,6 +33,10 @@ body {
   font-size: 2rem;
 }
 
+.board-header-title {
+  grid-column: 1/-1;
+}
+
 .boards {
   display: flex;
 }

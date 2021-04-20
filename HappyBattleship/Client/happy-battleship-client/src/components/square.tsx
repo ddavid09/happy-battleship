@@ -1,15 +1,17 @@
 import { Position } from "../models/position";
 
 interface SquareProps {
-  position: Position;
+  x: number;
+  y: number;
+  state: number;
 }
 
-const Square = ({ position }: SquareProps) => {
+const Square = ({ x, y, state }: SquareProps) => {
   return (
     <div className="board-square">
-      <p>X: {position.x}</p>
-      <p>Y: {position.y}</p>
-      <p>s: {position.state}</p>
+      <p>X: {x}</p>
+      <p>Y: {y}</p>
+      <p>s: {state}</p>
     </div>
   );
 };

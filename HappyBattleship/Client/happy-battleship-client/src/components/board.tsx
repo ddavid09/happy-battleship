@@ -1,22 +1,30 @@
+import { HubConnection } from "@microsoft/signalr";
 import { Position } from "../models/position";
 import BoardHeader from "./boardHeader";
+import RowHeader from "./rowHeader";
 import Square from "./square";
 
 interface BoardProps {
-  positions: Position[][];
+  hub: HubConnection | null;
+  side: string;
 }
 
-const Board = ({ positions }: BoardProps) => {
-  let rows: JSX.Element[] = [];
-  positions.forEach((row, rowIndex) => {
-    rows.push(<div className="board-square board-header">{rowIndex + 1}</div>);
-    row.forEach((_, colIndex) => rows.push(<Square position={positions[rowIndex][colIndex]} />));
-  });
+const BOARD_ROWS = 10;
+const BOARD_COLS = 11;
 
+const Board = ({ hub, side }: BoardProps) => {
   return (
     <div className="board">
-      <BoardHeader />
-      {rows.map((row) => row)}
+      <BoardHeader title={side + " Player"} />
+      {[...Array(BOARD_ROWS)].map((_, rowIndex) =>
+        [...Array(BOARD_COLS)].map((_, colIndex) => {
+          if (colIndex === 0) {
+            return <RowHeader rowIndex={rowIndex} />;
+          } else {
+            return <Square x={rowIndex} y={colIndex} state={0} />;
+          }
+        })
+      )}
     </div>
   );
 };
