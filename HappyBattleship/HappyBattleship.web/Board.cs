@@ -78,6 +78,15 @@ namespace HappyBattleship.web
             return true;
         }
 
+        public void TrackShoot(Shoot shoot, PositionState resultState)
+        {
+            _positions[shoot.targetX, shoot.targetY].State = resultState;
+        }
+
+        public List<Ship> GetShips()
+        {
+            return _ships;
+        }
 
         public PositionState HandleShoot(Shoot shoot)
         {
