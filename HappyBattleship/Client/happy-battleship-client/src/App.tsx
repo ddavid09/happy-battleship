@@ -32,6 +32,14 @@ function App() {
     <div className="boards">
       <Board hub={hub} side="Left" />
       <Board hub={hub} side="Right" />
+      <button
+        className="start-btn"
+        onClick={() => {
+          hub.send("StartSimulation");
+        }}
+      >
+        Start
+      </button>
     </div>
   );
 }

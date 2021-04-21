@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Timers;
 
 namespace HappyBattleship.web
@@ -12,6 +13,8 @@ namespace HappyBattleship.web
         private Timer _timer;
 
         private int _turn;
+
+        public bool IsRunning { get; private set; }
 
         public Simulation()
         {
@@ -27,6 +30,7 @@ namespace HappyBattleship.web
                 var shootResult = _rightPlayer.HandleReceivedShoot(e.Shoot);
                 Console.WriteLine($"Shot result: {Enum.GetName(typeof(PositionState), shootResult)}");
                 _leftPlayer.TrackShootResult(e.Shoot, shootResult);
+                RaiseNewTurn();
             };
 
             _rightPlayer.ShootEvent += (s, e) =>
@@ -35,12 +39,13 @@ namespace HappyBattleship.web
                 var shootResult = _leftPlayer.HandleReceivedShoot(e.Shoot);
                 Console.WriteLine($"Shot result: {Enum.GetName(typeof(PositionState), shootResult)}");
                 _rightPlayer.TrackShootResult(e.Shoot, shootResult);
+                RaiseNewTurn();
             };
 
             _leftPlayer.LostEvent += FinishHandler;
             _rightPlayer.LostEvent += FinishHandler;
 
-            _timer = new Timer(100);
+            _timer = new Timer(500);
             _timer.AutoReset = true;
 
             _timer.Elapsed += (s, e) =>
@@ -58,22 +63,45 @@ namespace HappyBattleship.web
             };
         }
 
+
         private void FinishHandler(object sender, EventArgs e)
         {
             _timer.Stop();
+            IsRunning = false;
             var player = (Player)sender;
             Console.WriteLine($"Player {player.NickName} Lost");
+        }
+
+        private void RaiseNewTurn()
+        {
+            var boardsState = _leftPlayer.PrimaryBoard.GetFlatBoardPositions().Concat(_rightPlayer.PrimaryBoard.GetFlatBoardPositions()).ToArray();
+            var args = new TurnEventArgs
+            {
+                FlatBoardsPositions = boardsState,
+                FlatLeftBoardPosition = _leftPlayer.PrimaryBoard.GetFlatBoardPositions(),
+                FlatRightBoardPosition = _rightPlayer.PrimaryBoard.GetFlatBoardPositions()
+            };
+            OnNewTurn(args);
         }
 
         public void Init()
         {
             _leftPlayer.ArrangeBoards();
             _rightPlayer.ArrangeBoards();
+            RaiseNewTurn();
         }
 
         public void Start()
         {
+            IsRunning = true;
             _timer.Start();
+        }
+
+        public event EventHandler<TurnEventArgs> NewTurn;
+
+        protected virtual void OnNewTurn(TurnEventArgs e)
+        {
+            NewTurn?.Invoke(this, e);
         }
 
     }

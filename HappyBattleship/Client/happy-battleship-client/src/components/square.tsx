@@ -14,11 +14,17 @@ const Square = ({ x, y, state }: SquareProps) => {
   }, [state]);
 
   return (
-    <div className={squareState === 1 ? "board-square covered" : "board-square"}>
-      <p>X: {x}</p>
-      <p>Y: {y}</p>
-      <p>s: {squareState}</p>
-    </div>
+    <div
+      className={
+        squareState === 1
+          ? "board-square covered"
+          : squareState === 2
+          ? "board-square missed"
+          : squareState === 3
+          ? "board-square hit"
+          : "board-square"
+      }
+    ></div>
   );
 };
 

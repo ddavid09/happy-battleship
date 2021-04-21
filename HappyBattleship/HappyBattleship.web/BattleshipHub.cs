@@ -9,39 +9,31 @@ namespace HappyBattleship.web
 {
     internal class BattleshipHub : Hub
     {
+        private Simulation _battleShipSimulation;
+
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
+        }
 
-            var boardCreator = new RandomBoardCreator();
-            var board = boardCreator.CreateBoard();
-            var boardPositions = board.GetFlatBoardPositions();
-            var serializerSettings = new JsonSerializerSettings
+        public async Task StartSimulation()
+        {
+            _battleShipSimulation = new Simulation();
+            _battleShipSimulation.NewTurn += async (s, e) =>
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+                var bothBoardsJson = JsonConvert.SerializeObject(e.FlatBoardsPositions, settings);
+                var leftBoardJson = JsonConvert.SerializeObject(e.FlatLeftBoardPosition, settings);
+                var rightBoardJson = JsonConvert.SerializeObject(e.FlatRightBoardPosition, settings);
+                await Clients.Caller.SendAsync("updateBoardsState", leftBoardJson, rightBoardJson, bothBoardsJson);
+                Console.WriteLine("Sent board state");
             };
-            var message = JsonConvert.SerializeObject(boardPositions, serializerSettings);
-
-            await Clients.Caller.SendAsync("ReloadBoard", message);
-        }
-
-        public async Task SendBoard()
-        {
-            var boardCreator = new RandomBoardCreator();
-            var board = boardCreator.CreateBoard();
-            var boardPositions = board.GetFlatBoardPositions();
-            var message = JsonConvert.SerializeObject(boardPositions);
-            await Clients.Caller.SendAsync("ReloadBoard");
-        }
-
-        public async Task LoadBoardShips()
-        {
-            var boardCreator = new RandomBoardCreator();
-            var board = boardCreator.CreateBoard();
-            var boardShips = board.GetShipsPositions();
-
-            var message = JsonConvert.SerializeObject(board);
-            await Clients.Caller.SendAsync("DrawShips", message);
+            _battleShipSimulation.Init();
+            _battleShipSimulation.Start();
+            await Task.Run(() => { while (_battleShipSimulation.IsRunning) ; });
         }
 
     }

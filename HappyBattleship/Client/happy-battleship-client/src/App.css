@@ -29,7 +29,15 @@ body {
 }
 
 .covered {
-  background-color: rgb(224, 15, 252);
+  background-color: rgb(44, 42, 44);
+}
+
+.missed {
+  background-color: rgb(54, 183, 243);
+}
+
+.hit {
+  background-color: rgb(253, 8, 8);
 }
 
 .board-header {

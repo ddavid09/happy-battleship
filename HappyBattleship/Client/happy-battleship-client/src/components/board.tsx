@@ -18,18 +18,26 @@ const generateKey = (rowIndex: number, colIndex: number) => {
 };
 
 const Board = ({ hub, side }: BoardProps) => {
-  const [boardPositionsState, setBoardPositionsState] = useState<Position[]>(
-    Array(100).fill({ x: 0, y: 0, state: 0 })
-  );
+  const initState = Array(100).fill({ x: 0, y: 0, state: 0 });
 
-  hub?.on("ReloadBoard", (positionsMessage: string) => {
-    let boardPositions: Position[] = JSON.parse(positionsMessage);
-    console.log("roload: " + positionsMessage);
+  const [boardPositionsState, setBoardPositionsState] = useState<Position[]>(initState);
 
-    setBoardPositionsState(boardPositions);
-  });
+  useEffect(() => {
+    hub?.on(
+      "updateBoardsState",
+      (leftBoardJson: string, rightBoardJson: string, bothBoardJson: string) => {
+        let newBoardPositions: Position[] = initState;
+        if (side === "Left") {
+          newBoardPositions = JSON.parse(leftBoardJson);
+        } else if (side === "Right") {
+          newBoardPositions = JSON.parse(rightBoardJson);
+        }
 
-  useEffect(() => {});
+        setBoardPositionsState(newBoardPositions);
+      }
+    );
+    console.log("new " + side + "board listner created");
+  }, []);
 
   return (
     <div className="board">

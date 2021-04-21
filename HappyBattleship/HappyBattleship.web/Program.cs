@@ -8,13 +8,11 @@ namespace HappyBattleship.web
     {
         public static void Main(string[] args)
         {
-            var simulation = new Simulation();
-            simulation.Init();
-            simulation.Start();
+            //var simulation = new Simulation();
+            //simulation.Init();
+            //simulation.Start();
 
-            Console.ReadKey();
-
-            //CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
