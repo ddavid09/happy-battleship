@@ -29,6 +29,23 @@ namespace HappyBattleship.web
             return _ships.SelectMany(ship => ship.Coordinates).ToArray();
         }
 
+        public Position[] GetFlatBoardPositions()
+        {
+            var size = _positions.Length;
+            Position[] result = new Position[size];
+
+            int index = 0;
+            for (var x = 0; x <= _positions.GetUpperBound(0); x++)
+            {
+                for (var y = 0; y <= _positions.GetUpperBound(1); y++)
+                {
+                    result[index++] = _positions[x, y];
+                }
+            }
+
+            return result;
+        }
+
         public void PostShip(Ship ship)
         {
             for (var i = 0; i < ship.Coordinates.Count; i++)

@@ -28,6 +28,10 @@ body {
   padding: 0;
 }
 
+.covered {
+  background-color: rgb(224, 15, 252);
+}
+
 .board-header {
   font-weight: bold;
   font-size: 2rem;

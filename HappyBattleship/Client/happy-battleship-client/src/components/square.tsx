@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 interface SquareProps {
   x: number;
   y: number;
@@ -5,11 +7,17 @@ interface SquareProps {
 }
 
 const Square = ({ x, y, state }: SquareProps) => {
+  const [squareState, setSquareState] = useState(0);
+
+  useEffect(() => {
+    setSquareState(state);
+  }, [state]);
+
   return (
-    <div className="board-square">
+    <div className={squareState === 1 ? "board-square covered" : "board-square"}>
       <p>X: {x}</p>
       <p>Y: {y}</p>
-      <p>s: {state}</p>
+      <p>s: {squareState}</p>
     </div>
   );
 };

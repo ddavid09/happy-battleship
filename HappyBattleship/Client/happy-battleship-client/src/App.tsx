@@ -4,8 +4,6 @@ import Board from "./components/board";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
 function App() {
-  const [hub, setHub] = useState<HubConnection | null>(null);
-
   const InitHubConnection = () => {
     let hub = new HubConnectionBuilder()
       .withUrl("http://localhost:5000/battleshipHub")
@@ -13,24 +11,27 @@ function App() {
       .configureLogging(LogLevel.Information)
       .build();
 
-    hub.start().catch((error) => console.log("Error starting signalr hub", error));
-
     return hub;
   };
 
+  const [hub, setHub] = useState<HubConnection>(InitHubConnection);
+
   const StopHubConnection = () => {
     hub?.stop().catch((error) => console.log("Error stopping signalr connecion", error));
-    setHub(null);
   };
 
   useEffect(() => {
-    setHub(InitHubConnection);
-  }, []);
+    async function startHubConnection() {
+      await hub.start().catch((error) => console.log("Error starting signalr hub", error));
+    }
+
+    startHubConnection();
+  });
 
   return (
     <div className="boards">
       <Board hub={hub} side="Left" />
-      <Board hub={hub} side="Right"/>
+      <Board hub={hub} side="Right" />
     </div>
   );
 }
