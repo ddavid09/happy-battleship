@@ -4,7 +4,7 @@ namespace HappyBattleship.web
 {
     public interface IShootCreator
     {
-        List<Shoot> Shot { get; set; }
+        List<Shoot> CreatedShoots { get; set; }
         Shoot CreateShoot();
     }
 }

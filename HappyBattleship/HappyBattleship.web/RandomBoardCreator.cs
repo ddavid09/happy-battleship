@@ -8,10 +8,11 @@ namespace HappyBattleship.web
     public class RandomBoardCreator : IBoardCreator
     {
         private Random _random = new();
-        private Board _board = new();
 
         public Board CreateBoard()
         {
+            Board board = new();
+
             foreach (ShipClass shipClass in Enum.GetValues(typeof(ShipClass)))
             {
                 Ship randomShip;
@@ -19,12 +20,12 @@ namespace HappyBattleship.web
                 {
                     randomShip = GenerateRandomPositionShip(shipClass);
 
-                } while (_board.CanPostShip(randomShip) != true);
+                } while (board.CanPostShip(randomShip) != true);
 
-                _board.PostShip(randomShip);
+                board.PostShip(randomShip);
             }
 
-            return _board;
+            return board;
         }
 
         private Ship GenerateRandomPositionShip(ShipClass shipClass)

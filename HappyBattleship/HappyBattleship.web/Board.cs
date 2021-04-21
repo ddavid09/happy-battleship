@@ -94,18 +94,18 @@ namespace HappyBattleship.web
 
             if (targetState == PositionState.Covered)
             {
-                targetState = PositionState.Hit;
+                _positions[shoot.targetX, shoot.targetY].State = PositionState.Hit;
             }
             else if (targetState == PositionState.Initial)
             {
-                targetState = PositionState.Missed;
+                _positions[shoot.targetX, shoot.targetY].State = PositionState.Missed;
             }
             else
             {
                 throw new InvalidOperationException($"Position {shoot.targetX}, {shoot.targetY} was handled before");
             }
 
-            return targetState;
+            return _positions[shoot.targetX, shoot.targetY].State;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace HappyBattleship.web
         public ShipClass Class { get; set; }
         public bool Destroyed
         {
-            get => Coordinates.Select(p => p.State == PositionState.Hit).Count() == Size;
+            get => Coordinates.Where(p => p.State == PositionState.Hit).Count() == Size;
         }
         public List<Position> Coordinates { get; set; }
 

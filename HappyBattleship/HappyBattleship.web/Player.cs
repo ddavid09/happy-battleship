@@ -10,18 +10,26 @@ namespace HappyBattleship.web
         public string NickName { get; set; }
         public Board PrimaryBoard { get; private set; }
         public Board TrackingBoard { get; private set; }
-        public List<Shoot> Shot { get; private set; }
+        public List<Shoot> Shot { get; private set; } = new List<Shoot>();
 
         private IShootCreator _shootCreator;
 
         private IBoardCreator _boardCreator;
 
+        public Player()
+        {
+            _boardCreator = new RandomBoardCreator();
+            _shootCreator = new RandomShootCreator
+            {
+                CreatedShoots = Shot
+            };
+        }
+
         public Player(IBoardCreator boardCreator, IShootCreator shootCreator)
         {
             _boardCreator = boardCreator;
             _shootCreator = shootCreator;
-            Shot = new List<Shoot>();
-            _shootCreator.Shot = Shot;
+            _shootCreator.CreatedShoots = Shot;
         }
 
         public void ArrangeBoards()
@@ -43,26 +51,31 @@ namespace HappyBattleship.web
             return shoot;
         }
 
-        public void TrackLastShootResult(PositionState result)
+        public void TrackShootResult(Shoot lastShoot, PositionState result)
         {
-            var lastShoot = Shot.Last();
             TrackingBoard.TrackShoot(lastShoot, result);
         }
 
         public PositionState HandleReceivedShoot(Shoot shoot)
         {
             return PrimaryBoard.HandleShoot(shoot);
-
         }
 
         public bool Lose
         {
-            get => PrimaryBoard.GetShips().Select(ship => ship.Destroyed == true).Count() == Enum.GetNames(typeof(ShipClass)).Length;
+            get => PrimaryBoard.GetShips().Where(ship => ship.Destroyed == true).Count() == Enum.GetNames(typeof(ShipClass)).Length;
         }
 
         protected virtual void OnShoot(ShootEventArgs e)
         {
-            ShootEvent?.Invoke(this, e);
+            if (Lose == false)
+            {
+                ShootEvent?.Invoke(this, e);
+            }
+            else
+            {
+                OnLose(e);
+            }
         }
 
         protected virtual void OnLose(EventArgs e)
