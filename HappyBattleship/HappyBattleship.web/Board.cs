@@ -66,16 +66,37 @@ namespace HappyBattleship.web
 
         public bool CanPostShip(Ship ship)
         {
+            var neighbours = DetermineShipNeighbourPositions(ship);
+
             foreach (var position in ship.Coordinates)
             {
                 var positionToCover = _positions[position.X, position.Y];
-                if (positionToCover.State != PositionState.Initial)
+
+                if (positionToCover.State == PositionState.Covered ||
+                    neighbours.Any(p => p.State == PositionState.Covered))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private List<Position> DetermineShipNeighbourPositions(Ship ship)
+        {
+            var output = new List<Position>();
+            var flatBoard = GetFlatBoardPositions();
+
+            foreach (var position in ship.Coordinates)
+            {
+                var positionNeighbours = flatBoard.Where(p =>
+                (p.X >= position.X - 1 && p.Y >= position.Y - 1) &&
+                (p.X <= position.X + 1 && p.Y <= position.Y + 1));
+
+                output.AddRange(positionNeighbours);
+            }
+
+            return output.Distinct().ToList();
         }
 
         public void TrackShoot(Shoot shoot, PositionState resultState)
