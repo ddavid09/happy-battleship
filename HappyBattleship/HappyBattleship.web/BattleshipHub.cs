@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HappyBattleship.web
@@ -18,22 +17,26 @@ namespace HappyBattleship.web
 
         public async Task StartSimulation()
         {
-            _battleShipSimulation = new Simulation();
-            _battleShipSimulation.NewTurn += async (s, e) =>
+            do
             {
-                var settings = new JsonSerializerSettings
+                _battleShipSimulation = new Simulation();
+                _battleShipSimulation.NewTurn += async (s, e) =>
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    var settings = new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    };
+                    var bothBoardsJson = JsonConvert.SerializeObject(e.FlatBoardsPositions, settings);
+                    var leftBoardJson = JsonConvert.SerializeObject(e.FlatLeftBoardPosition, settings);
+                    var rightBoardJson = JsonConvert.SerializeObject(e.FlatRightBoardPosition, settings);
+                    await Clients.Caller.SendAsync("updateBoardsState", leftBoardJson, rightBoardJson, bothBoardsJson);
+                    Console.WriteLine("Sent board state");
                 };
-                var bothBoardsJson = JsonConvert.SerializeObject(e.FlatBoardsPositions, settings);
-                var leftBoardJson = JsonConvert.SerializeObject(e.FlatLeftBoardPosition, settings);
-                var rightBoardJson = JsonConvert.SerializeObject(e.FlatRightBoardPosition, settings);
-                await Clients.Caller.SendAsync("updateBoardsState", leftBoardJson, rightBoardJson, bothBoardsJson);
-                Console.WriteLine("Sent board state");
-            };
-            _battleShipSimulation.Init();
-            _battleShipSimulation.Start();
-            await Task.Run(() => { while (_battleShipSimulation.IsRunning) ; });
+                _battleShipSimulation.Init();
+                _battleShipSimulation.Start();
+                await Task.Run(() => { while (_battleShipSimulation.IsRunning) ; });
+
+            } while (true);
         }
 
     }

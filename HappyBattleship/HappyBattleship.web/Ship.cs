@@ -22,7 +22,7 @@ namespace HappyBattleship.web
         {
             Class = shipClass;
             Coordinates = coordinates;
-            Size = Utils.InferShipSize(shipClass);
+            Size = Helpers.InferShipSize(shipClass);
 
             StartX = Coordinates.First().X;
             StartY = Coordinates.First().Y;

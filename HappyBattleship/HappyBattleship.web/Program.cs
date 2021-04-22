@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace HappyBattleship.web
 {
@@ -8,10 +7,6 @@ namespace HappyBattleship.web
     {
         public static void Main(string[] args)
         {
-            //var simulation = new Simulation();
-            //simulation.Init();
-            //simulation.Start();
-
             CreateHostBuilder(args).Build().Run();
         }
 

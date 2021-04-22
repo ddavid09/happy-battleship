@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HappyBattleship.web
 {
@@ -40,7 +38,7 @@ namespace HappyBattleship.web
 
             var direction = _random.Next(2);
 
-            var shipSize = Utils.InferShipSize(shipClass);
+            var shipSize = Helpers.InferShipSize(shipClass);
 
             if (direction == 0)
             {

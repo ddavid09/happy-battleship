@@ -45,7 +45,7 @@ namespace HappyBattleship.web
             _leftPlayer.LostEvent += FinishHandler;
             _rightPlayer.LostEvent += FinishHandler;
 
-            _timer = new Timer(500);
+            _timer = new Timer(50);
             _timer.AutoReset = true;
 
             _timer.Elapsed += (s, e) =>
