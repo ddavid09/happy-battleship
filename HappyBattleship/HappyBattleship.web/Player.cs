@@ -51,19 +51,25 @@ namespace HappyBattleship.web
             return shoot;
         }
 
-        public void TrackShootResult(Shoot lastShoot, PositionState result)
+        public void TrackShootResult(Shoot lastShoot)
         {
-            TrackingBoard.TrackShoot(lastShoot, result);
+            TrackingBoard.TrackShoot(lastShoot);
         }
 
-        public PositionState HandleReceivedShoot(Shoot shoot)
+        public void TrackShootResult()
+        {
+            var lastShoot = ShootHistory.Last();
+            TrackingBoard.TrackShoot(lastShoot);
+        }
+
+        public ShootResult HandleReceivedShoot(Shoot shoot)
         {
             return PrimaryBoard.HandleShoot(shoot);
         }
 
         public bool Lose
         {
-            get => PrimaryBoard.GetShips().Where(ship => ship.Destroyed == true).Count() == Enum.GetNames(typeof(ShipClass)).Length;
+            get => PrimaryBoard.AllShipsDestroyed;
         }
 
         protected virtual void OnShoot(ShootEventArgs e)

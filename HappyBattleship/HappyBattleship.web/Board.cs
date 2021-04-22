@@ -9,6 +9,8 @@ namespace HappyBattleship.web
         private List<Ship> _ships;
         private readonly Position[,] _positions;
 
+        public bool AllShipsDestroyed { get => _ships.Where(ship => ship.Destroyed == true).Count() == Enum.GetNames(typeof(ShipClass)).Length; }
+
         public Board()
         {
             _positions = new Position[10, 10];
@@ -53,11 +55,6 @@ namespace HappyBattleship.web
                 var shipPosition = ship.Coordinates[i];
                 var positionToCover = _positions[shipPosition.X, shipPosition.Y];
 
-                if (positionToCover.State != PositionState.Initial)
-                {
-                    throw new InvalidOperationException($"Position {positionToCover.X}, {positionToCover.Y} is already covered, check if you can post ship before invoke PostShip method");
-                }
-
                 positionToCover.State = PositionState.Covered;
                 ship.Coordinates[i] = positionToCover;
             }
@@ -66,7 +63,7 @@ namespace HappyBattleship.web
 
         public bool CanPostShip(Ship ship)
         {
-            var neighbours = DetermineShipNeighbourPositions(ship);
+            var neighbours = ShipNeighbourPositions(ship);
 
             foreach (var position in ship.Coordinates)
             {
@@ -82,7 +79,7 @@ namespace HappyBattleship.web
             return true;
         }
 
-        private List<Position> DetermineShipNeighbourPositions(Ship ship)
+        private List<Position> ShipNeighbourPositions(Ship ship)
         {
             var output = new List<Position>();
             var flatBoard = GetFlatBoardPositions();
@@ -104,29 +101,57 @@ namespace HappyBattleship.web
             _positions[shoot.TargetX, shoot.TargetY].State = resultState;
         }
 
-        public List<Ship> GetShips()
+        public void TrackShoot(Shoot shoot)
         {
-            return _ships;
+            switch (shoot.Result)
+            {
+                case ShootResult.Missed:
+                    _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Missed;
+                    break;
+                case ShootResult.Hit:
+                case ShootResult.HitDestroyed:
+                    _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Hit;
+                    break;
+                default:
+                    throw new InvalidOperationException("Shoot you want to track, wasn't handled (has NotHandled state)");
+            }
         }
 
-        public PositionState HandleShoot(Shoot shoot)
+        public ShootResult HandleShoot(Shoot shoot)
         {
             var targetState = _positions[shoot.TargetX, shoot.TargetY].State;
 
             if (targetState == PositionState.Covered)
             {
                 _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Hit;
+
+                var shipOnPosition = GetShipOnPosition(_positions[shoot.TargetX, shoot.TargetY]);
+
+                if (shipOnPosition.Destroyed == true)
+                {
+                    shoot.Result = ShootResult.HitDestroyed;
+                }
+                else
+                {
+                    shoot.Result = ShootResult.Hit;
+                }
             }
             else if (targetState == PositionState.Initial)
             {
                 _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Missed;
+                shoot.Result = ShootResult.Missed;
             }
             else
             {
                 throw new InvalidOperationException($"Position {shoot.TargetX}, {shoot.TargetY} was handled before");
             }
 
-            return _positions[shoot.TargetX, shoot.TargetY].State;
+            return shoot.Result;
+        }
+
+        private Ship GetShipOnPosition(Position position)
+        {
+            return _ships.Where(s => s.Coordinates.Contains(position)).First();
         }
     }
 }
