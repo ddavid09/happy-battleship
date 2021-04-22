@@ -18,7 +18,7 @@ namespace HappyBattleship.web
         public Player()
         {
             _boardCreator = new RandomBoardCreator();
-            _shootCreator = new RandomShootCreator
+            _shootCreator = new SmartShootCreator
             {
                 CreatedShoots = ShootHistory
             };

@@ -5,6 +5,7 @@
         NotHandled,
         Missed,
         Hit,
-        HitDestroyed
+        HitDestroyed,
+        NoSense
     }
 }
