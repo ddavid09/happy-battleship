@@ -101,7 +101,7 @@ namespace HappyBattleship.web
 
         public void TrackShoot(Shoot shoot, PositionState resultState)
         {
-            _positions[shoot.targetX, shoot.targetY].State = resultState;
+            _positions[shoot.TargetX, shoot.TargetY].State = resultState;
         }
 
         public List<Ship> GetShips()
@@ -111,22 +111,22 @@ namespace HappyBattleship.web
 
         public PositionState HandleShoot(Shoot shoot)
         {
-            var targetState = _positions[shoot.targetX, shoot.targetY].State;
+            var targetState = _positions[shoot.TargetX, shoot.TargetY].State;
 
             if (targetState == PositionState.Covered)
             {
-                _positions[shoot.targetX, shoot.targetY].State = PositionState.Hit;
+                _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Hit;
             }
             else if (targetState == PositionState.Initial)
             {
-                _positions[shoot.targetX, shoot.targetY].State = PositionState.Missed;
+                _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Missed;
             }
             else
             {
-                throw new InvalidOperationException($"Position {shoot.targetX}, {shoot.targetY} was handled before");
+                throw new InvalidOperationException($"Position {shoot.TargetX}, {shoot.TargetY} was handled before");
             }
 
-            return _positions[shoot.targetX, shoot.targetY].State;
+            return _positions[shoot.TargetX, shoot.TargetY].State;
         }
     }
 }

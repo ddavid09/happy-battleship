@@ -26,7 +26,7 @@ namespace HappyBattleship.web
 
             _leftPlayer.ShootEvent += (s, e) =>
             {
-                Console.WriteLine($"{_leftPlayer.NickName} shot x:{e.Shoot.targetX} y:{e.Shoot.targetY}");
+                Console.WriteLine($"{_leftPlayer.NickName} shot x:{e.Shoot.TargetX} y:{e.Shoot.TargetY}");
                 var shootResult = _rightPlayer.HandleReceivedShoot(e.Shoot);
                 Console.WriteLine($"Shot result: {Enum.GetName(typeof(PositionState), shootResult)}");
                 _leftPlayer.TrackShootResult(e.Shoot, shootResult);
@@ -35,7 +35,7 @@ namespace HappyBattleship.web
 
             _rightPlayer.ShootEvent += (s, e) =>
             {
-                Console.WriteLine($"{_rightPlayer.NickName} shot x:{e.Shoot.targetX} y:{e.Shoot.targetY}");
+                Console.WriteLine($"{_rightPlayer.NickName} shot x:{e.Shoot.TargetX} y:{e.Shoot.TargetY}");
                 var shootResult = _leftPlayer.HandleReceivedShoot(e.Shoot);
                 Console.WriteLine($"Shot result: {Enum.GetName(typeof(PositionState), shootResult)}");
                 _rightPlayer.TrackShootResult(e.Shoot, shootResult);

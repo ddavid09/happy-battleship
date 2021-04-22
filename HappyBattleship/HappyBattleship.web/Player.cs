@@ -10,7 +10,7 @@ namespace HappyBattleship.web
         public string NickName { get; set; }
         public Board PrimaryBoard { get; private set; }
         public Board TrackingBoard { get; private set; }
-        public List<Shoot> Shot { get; private set; } = new List<Shoot>();
+        public List<Shoot> ShootHistory { get; private set; } = new List<Shoot>();
 
         private IShootCreator _shootCreator;
 
@@ -21,7 +21,7 @@ namespace HappyBattleship.web
             _boardCreator = new RandomBoardCreator();
             _shootCreator = new RandomShootCreator
             {
-                CreatedShoots = Shot
+                CreatedShoots = ShootHistory
             };
         }
 
@@ -29,7 +29,7 @@ namespace HappyBattleship.web
         {
             _boardCreator = boardCreator;
             _shootCreator = shootCreator;
-            _shootCreator.CreatedShoots = Shot;
+            _shootCreator.CreatedShoots = ShootHistory;
         }
 
         public void ArrangeBoards()
@@ -41,7 +41,7 @@ namespace HappyBattleship.web
         public Shoot Shoot()
         {
             var shoot = _shootCreator.CreateShoot();
-            Shot.Add(shoot);
+            ShootHistory.Add(shoot);
 
             var shootEventArgs = new ShootEventArgs
             {
