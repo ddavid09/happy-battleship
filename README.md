@@ -9,3 +9,5 @@ Nie zdąrzyłem ukończyć całego zadania do terminu jaki zadeklarowałem, nie 
 
 Kroki jakie podejmę w pierwszej kolejności w przyszłym tygodniu to komunikacja frontend-backend a później utworzenie inteligentnej strategii wylosowania nowego strzału. 
 
+Jeżeli nie zraża was fakt że nie wyrobiłem się w 100% to z miłą chęcią prześlę rozwiązanie, gdy uda mi się je całkowicie ukończyć - proszę o feedback na maila.
+
