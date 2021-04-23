@@ -19,8 +19,8 @@ namespace HappyBattleship.web
 
                 shoot = new Shoot
                 {
-                    TargetX = randX,
-                    TargetY = randY
+                    X = randX,
+                    Y = randY
                 };
             } while (AlreadyCreated(shoot) == true);
 
@@ -29,7 +29,7 @@ namespace HappyBattleship.web
 
         private bool AlreadyCreated(Shoot shoot)
         {
-            return CreatedShoots.Where(created => created.TargetX == shoot.TargetX && created.TargetY == shoot.TargetY).Count() > 0;
+            return CreatedShoots.Where(created => created.X == shoot.X && created.Y == shoot.Y).Count() > 0;
         }
     }
 }

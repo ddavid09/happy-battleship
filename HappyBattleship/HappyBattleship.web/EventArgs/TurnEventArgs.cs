@@ -4,10 +4,8 @@ namespace HappyBattleship.web
 {
     public class TurnEventArgs : EventArgs
     {
-        public Position[] FlatBoardsPositions;
+        public string UpdateAtPlayer { get; set; }
+        public Position PositionToUpdate { get; set; }
 
-        public Position[] FlatLeftBoardPosition;
-
-        public Position[] FlatRightBoardPosition;
     }
 }

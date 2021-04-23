@@ -98,7 +98,7 @@ namespace HappyBattleship.web
 
         public void TrackShoot(Shoot shoot, PositionState resultState)
         {
-            _positions[shoot.TargetX, shoot.TargetY].State = resultState;
+            _positions[shoot.X, shoot.Y].State = resultState;
         }
 
         public void TrackShoot(Shoot shoot)
@@ -106,11 +106,11 @@ namespace HappyBattleship.web
             switch (shoot.Result)
             {
                 case ShootResult.Missed:
-                    _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Missed;
+                    _positions[shoot.X, shoot.Y].State = PositionState.Missed;
                     break;
                 case ShootResult.Hit:
                 case ShootResult.HitDestroyed:
-                    _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Hit;
+                    _positions[shoot.X, shoot.Y].State = PositionState.Hit;
                     break;
                 default:
                     throw new InvalidOperationException("Shoot you want to track, wasn't handled (has NotHandled state)");
@@ -119,13 +119,13 @@ namespace HappyBattleship.web
 
         public ShootResult HandleShoot(Shoot shoot)
         {
-            var targetState = _positions[shoot.TargetX, shoot.TargetY].State;
+            var targetState = _positions[shoot.X, shoot.Y].State;
 
             if (targetState == PositionState.Covered)
             {
-                _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Hit;
+                _positions[shoot.X, shoot.Y].State = PositionState.Hit;
 
-                var shipOnPosition = GetShipOnPosition(_positions[shoot.TargetX, shoot.TargetY]);
+                var shipOnPosition = GetShipOnPosition(_positions[shoot.X, shoot.Y]);
 
                 if (shipOnPosition.Destroyed == true)
                 {
@@ -138,12 +138,12 @@ namespace HappyBattleship.web
             }
             else if (targetState == PositionState.Initial)
             {
-                _positions[shoot.TargetX, shoot.TargetY].State = PositionState.Missed;
+                _positions[shoot.X, shoot.Y].State = PositionState.Missed;
                 shoot.Result = ShootResult.Missed;
             }
             else
             {
-                throw new InvalidOperationException($"Position {shoot.TargetX}, {shoot.TargetY} was handled before");
+                throw new InvalidOperationException($"Position {shoot.X}, {shoot.Y} was handled before");
             }
 
             return shoot.Result;

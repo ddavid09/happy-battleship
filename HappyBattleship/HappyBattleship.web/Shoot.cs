@@ -10,20 +10,20 @@ namespace HappyBattleship.web
 
         private bool _resultWasSet;
 
-        private int _targetX;
+        private int _x;
 
-        private int _targetY;
+        private int _y;
 
         private ShootResult _result;
 
-        public int TargetX
+        public int X
         {
-            get => _targetX;
+            get => _x;
             set
             {
                 if (_xWasSet == false)
                 {
-                    _targetX = value;
+                    _x = value;
                     _xWasSet = true;
                 }
                 else
@@ -32,14 +32,14 @@ namespace HappyBattleship.web
                 }
             }
         }
-        public int TargetY
+        public int Y
         {
-            get => _targetY;
+            get => _y;
             set
             {
                 if (_yWasSet == false)
                 {
-                    _targetY = value;
+                    _y = value;
                     _yWasSet = true;
                 }
                 else

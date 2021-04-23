@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace HappyBattleship.web
 {
-    public class Player
+    public class Player : IPlayer
     {
         public string NickName { get; set; }
         public Board PrimaryBoard { get; private set; }

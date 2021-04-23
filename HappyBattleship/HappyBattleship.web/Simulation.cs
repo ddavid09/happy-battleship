@@ -4,105 +4,148 @@ using System.Timers;
 
 namespace HappyBattleship.web
 {
-    public class Simulation
+    public class Simulation : ISimulation
     {
-        private Player _leftPlayer;
+        private IPlayer _leftPlayer;
 
-        private Player _rightPlayer;
+        private IPlayer _rightPlayer;
+
+        private bool _turnBelongTo;
+
+        private bool _isFinished;
 
         private Timer _timer;
 
-        private int _turn;
+        public bool IsRunning => _timer.Enabled == true;
 
-        public bool IsRunning { get; private set; }
+        public bool IsFinished => _isFinished;
 
-        public Simulation()
+        public int TurnsInterval { get; set; } = 30;
+
+        public Simulation(IPlayer leftPlayer, IPlayer rightPlayer)
         {
-            _leftPlayer = new Player();
-            _leftPlayer.NickName = "LeftComandor";
+            _leftPlayer = leftPlayer;
+            _rightPlayer = rightPlayer;
 
-            _rightPlayer = new Player();
-            _rightPlayer.NickName = "RightCommandor";
-
-            _leftPlayer.ShootEvent += (s, e) =>
-            {
-                Console.WriteLine($"{_leftPlayer.NickName} shot x:{e.Shoot.TargetX} y:{e.Shoot.TargetY}");
-                var shootResult = _rightPlayer.HandleReceivedShoot(e.Shoot);
-                Console.WriteLine($"Shot result: {Enum.GetName(typeof(ShootResult), shootResult)}");
-                _leftPlayer.TrackShootResult();
-                RaiseNewTurn();
-            };
-
-            _rightPlayer.ShootEvent += (s, e) =>
-            {
-                Console.WriteLine($"{_rightPlayer.NickName} shot x:{e.Shoot.TargetX} y:{e.Shoot.TargetY}");
-                var shootResult = _leftPlayer.HandleReceivedShoot(e.Shoot);
-                Console.WriteLine($"Shot result: {Enum.GetName(typeof(ShootResult), shootResult)}");
-                _rightPlayer.TrackShootResult();
-                RaiseNewTurn();
-            };
-
-            _leftPlayer.LostEvent += FinishHandler;
-            _rightPlayer.LostEvent += FinishHandler;
-
-            _timer = new Timer(50);
+            _timer = new Timer(TurnsInterval);
             _timer.AutoReset = true;
 
-            _timer.Elapsed += (s, e) =>
-            {
-                if (_turn == 0)
-                {
-                    _leftPlayer.Shoot();
-                    _turn = 1;
-                }
-                else
-                {
-                    _rightPlayer.Shoot();
-                    _turn = 0;
-                }
-            };
-        }
-
-
-        private void FinishHandler(object sender, EventArgs e)
-        {
-            _timer.Stop();
-            IsRunning = false;
-            var player = (Player)sender;
-            Console.WriteLine($"Player {player.NickName} Lost");
-        }
-
-        private void RaiseNewTurn()
-        {
-            var boardsState = _leftPlayer.PrimaryBoard.GetFlatBoardPositions().Concat(_rightPlayer.PrimaryBoard.GetFlatBoardPositions()).ToArray();
-            var args = new TurnEventArgs
-            {
-                FlatBoardsPositions = boardsState,
-                FlatLeftBoardPosition = _leftPlayer.PrimaryBoard.GetFlatBoardPositions(),
-                FlatRightBoardPosition = _rightPlayer.PrimaryBoard.GetFlatBoardPositions()
-            };
-            OnNewTurn(args);
-        }
-
-        public void Init()
-        {
-            _leftPlayer.ArrangeBoards();
-            _rightPlayer.ArrangeBoards();
-            RaiseNewTurn();
+            InitSimulationGoingLogic();
         }
 
         public void Start()
         {
-            IsRunning = true;
             _timer.Start();
         }
 
-        public event EventHandler<TurnEventArgs> NewTurn;
-
-        protected virtual void OnNewTurn(TurnEventArgs e)
+        public void Pause()
         {
-            NewTurn?.Invoke(this, e);
+            _timer.Stop();
         }
+
+        public void Stop()
+        {
+            _timer.Stop();
+        }
+
+        private void InitSimulationGoingLogic()
+        {
+            _leftPlayer.NickName = "Left Player";
+            _rightPlayer.NickName = "Right Player";
+
+            _leftPlayer.ShootEvent += (s, e) =>
+            {
+                var shootResult = _rightPlayer.ShootResult(e.Shoot);
+                e.Shoot.Result = shootResult;
+                _rightPlayer.HandleReceivedShoot(e.Shoot);
+                _leftPlayer.TrackShootResult(e.Shoot);
+                RaiseAfterTurn(e.Shoot, "right");
+                if (shootResult == ShootResult.Missed)
+                {
+                    _turnBelongTo = !_turnBelongTo;
+                }
+            };
+
+            _rightPlayer.ShootEvent += (s, e) =>
+            {
+                var shootResult = _leftPlayer.ShootResult(e.Shoot);
+                e.Shoot.Result = shootResult;
+                _leftPlayer.HandleReceivedShoot(e.Shoot);
+                _rightPlayer.TrackShootResult(e.Shoot);
+                RaiseAfterTurn(e.Shoot, "left");
+                if (shootResult == ShootResult.Missed)
+                {
+                    _turnBelongTo = !_turnBelongTo;
+                }
+            };
+
+            _timer.Elapsed += (s, e) =>
+            {
+                if (_turnBelongTo)
+                {
+                    _leftPlayer.Shoot();
+                }
+                else
+                {
+                    _rightPlayer.Shoot();
+                }
+            };
+
+            var rand = new Random();
+
+            _turnBelongTo = Convert.ToBoolean(rand.Next(2));
+
+            RaiseOnInitiallised();
+        }
+
+        private void RaiseAfterTurn(Shoot shoot, string raiseOnSide)
+        {
+            var args = new TurnEventArgs();
+            var positionToUpdate = new Position(shoot.X, shoot.Y);
+
+            var shootResult = shoot.Result;
+
+            if (shootResult == ShootResult.Hit || shootResult == ShootResult.HitDestroyed)
+            {
+                positionToUpdate.State = PositionState.Hit;
+            }
+            else
+            {
+                positionToUpdate.State = PositionState.Missed;
+            }
+
+            args.UpdateAtPlayer = raiseOnSide;
+            args.PositionToUpdate = positionToUpdate;
+
+            OnAfterTurn(args);
+        }
+
+        private void RaiseOnInitiallised()
+        {
+            var args = new SimInitialisedEventArgs();
+
+            args.LeftBoardToDraw = _leftPlayer.GetPrimaryBoardFlatted();
+            args.RightBoardToDraw = _rightPlayer.GetPrimaryBoardFlatted();
+
+            args.PlayerBegining = _turnBelongTo ? _leftPlayer.NickName : _rightPlayer.NickName;
+
+            OnInitilised(args);
+        }
+
+        public event EventHandler<TurnEventArgs> AfterTurn;
+
+        public event EventHandler<SimInitialisedEventArgs> Initialised;
+
+        protected virtual void OnAfterTurn(TurnEventArgs e)
+        {
+            AfterTurn?.Invoke(this, e);
+        }
+
+        protected virtual void OnInitilised(SimInitialisedEventArgs e)
+        {
+            Initialised?.Invoke(this, e);
+        }
+
 
     }
 }
