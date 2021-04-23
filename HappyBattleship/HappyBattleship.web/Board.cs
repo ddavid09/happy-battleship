@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace HappyBattleship.web
 {
-    public class Board
+    public class Board : IBoard
     {
-        private List<Ship> _ships;
         private readonly Position[,] _positions;
+        private List<Ship> _ships;
 
         public bool AllShipsDestroyed { get => _ships.Where(ship => ship.Destroyed == true).Count() == Enum.GetNames(typeof(ShipClass)).Length; }
 
@@ -26,12 +26,7 @@ namespace HappyBattleship.web
             _ships = new List<Ship>();
         }
 
-        public Position[] GetShipsPositions()
-        {
-            return _ships.SelectMany(ship => ship.Coordinates).ToArray();
-        }
-
-        public Position[] GetFlatBoardPositions()
+        public Position[] GetBoardPositionsFlatted()
         {
             var size = _positions.Length;
             Position[] result = new Position[size];
@@ -79,10 +74,55 @@ namespace HappyBattleship.web
             return true;
         }
 
+        public ShootResult ShootResult(Shoot shoot)
+        {
+            var prevState = _positions[shoot.X, shoot.Y].State;
+
+            if (prevState == PositionState.Initial)
+            {
+                return web.ShootResult.Missed;
+            }
+            else if (prevState == PositionState.Covered)
+            {
+                var shipOnPosition = GetShipOnPosition(_positions[shoot.X, shoot.Y]);
+
+                if (shipOnPosition.Coordinates.Where(p => p.State == PositionState.Covered).Count() == 1)
+                {
+                    return web.ShootResult.HitDestroyed;
+                }
+
+                return web.ShootResult.Hit;
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        public void MarkReceivedShoot(Shoot shoot)
+        {
+            var result = ShootResult(shoot);
+
+            switch (result)
+            {
+                case web.ShootResult.Missed:
+                    _positions[shoot.X, shoot.Y].State = PositionState.Missed;
+                    break;
+                case web.ShootResult.Hit:
+                case web.ShootResult.HitDestroyed:
+                    _positions[shoot.X, shoot.Y].State = PositionState.Hit;
+                    break;
+                case web.ShootResult.NotHandled:
+                case web.ShootResult.NoSense:
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
         private List<Position> ShipNeighbourPositions(Ship ship)
         {
             var output = new List<Position>();
-            var flatBoard = GetFlatBoardPositions();
+            var flatBoard = GetBoardPositionsFlatted();
 
             foreach (var position in ship.Coordinates)
             {
@@ -94,59 +134,6 @@ namespace HappyBattleship.web
             }
 
             return output.Distinct().ToList();
-        }
-
-        public void TrackShoot(Shoot shoot, PositionState resultState)
-        {
-            _positions[shoot.X, shoot.Y].State = resultState;
-        }
-
-        public void TrackShoot(Shoot shoot)
-        {
-            switch (shoot.Result)
-            {
-                case ShootResult.Missed:
-                    _positions[shoot.X, shoot.Y].State = PositionState.Missed;
-                    break;
-                case ShootResult.Hit:
-                case ShootResult.HitDestroyed:
-                    _positions[shoot.X, shoot.Y].State = PositionState.Hit;
-                    break;
-                default:
-                    throw new InvalidOperationException("Shoot you want to track, wasn't handled (has NotHandled state)");
-            }
-        }
-
-        public ShootResult HandleShoot(Shoot shoot)
-        {
-            var targetState = _positions[shoot.X, shoot.Y].State;
-
-            if (targetState == PositionState.Covered)
-            {
-                _positions[shoot.X, shoot.Y].State = PositionState.Hit;
-
-                var shipOnPosition = GetShipOnPosition(_positions[shoot.X, shoot.Y]);
-
-                if (shipOnPosition.Destroyed == true)
-                {
-                    shoot.Result = ShootResult.HitDestroyed;
-                }
-                else
-                {
-                    shoot.Result = ShootResult.Hit;
-                }
-            }
-            else if (targetState == PositionState.Initial)
-            {
-                _positions[shoot.X, shoot.Y].State = PositionState.Missed;
-                shoot.Result = ShootResult.Missed;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Position {shoot.X}, {shoot.Y} was handled before");
-            }
-
-            return shoot.Result;
         }
 
         private Ship GetShipOnPosition(Position position)
