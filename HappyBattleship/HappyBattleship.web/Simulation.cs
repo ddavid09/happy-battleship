@@ -58,7 +58,7 @@ namespace HappyBattleship.web
                 var shootResult = _rightPlayer.ShootResult(e.Shoot);
                 e.Shoot.Result = shootResult;
                 _rightPlayer.HandleReceivedShoot(e.Shoot);
-                _leftPlayer.TrackShootResult(e.Shoot);
+                _leftPlayer.TrackFiredShootResult(e.Shoot);
                 RaiseAfterTurn(e.Shoot, "right");
                 if (shootResult == ShootResult.Missed)
                 {
@@ -71,7 +71,7 @@ namespace HappyBattleship.web
                 var shootResult = _leftPlayer.ShootResult(e.Shoot);
                 e.Shoot.Result = shootResult;
                 _leftPlayer.HandleReceivedShoot(e.Shoot);
-                _rightPlayer.TrackShootResult(e.Shoot);
+                _rightPlayer.TrackFiredShootResult(e.Shoot);
                 RaiseAfterTurn(e.Shoot, "left");
                 if (shootResult == ShootResult.Missed)
                 {

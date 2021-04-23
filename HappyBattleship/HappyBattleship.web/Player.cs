@@ -6,92 +6,98 @@ namespace HappyBattleship.web
 {
     public class Player : IPlayer
     {
+        private IBoard _primaryBoard;
+
+        private IShootingStrategy _shootingStrategy;
+
+        private IFleetCreator _fleetCreator;
+
         public string NickName { get; set; }
-        public Board PrimaryBoard { get; private set; }
-        public Board TrackingBoard { get; private set; }
-        public List<Shoot> ShootHistory { get; private set; } = new List<Shoot>();
 
-        private IShootCreator _shootCreator;
-
-        private IBoardCreator _boardCreator;
-
-        public Player()
+        public Player(IBoard primaryBoard, IShootingStrategy shootingStrategy, IFleetCreator fleetCreator)
         {
-            _boardCreator = new RandomBoardCreator();
-            _shootCreator = new SmartShootCreator
+            _primaryBoard = primaryBoard;
+            _shootingStrategy = shootingStrategy;
+            _fleetCreator = fleetCreator;
+
+            SetFleetOnBoard();
+        }
+
+        private void SetFleetOnBoard()
+        {
+            foreach (ShipClass shipClass in Enum.GetValues(typeof(ShipClass)))
             {
-                CreatedShoots = ShootHistory
-            };
-        }
+                Ship ship;
+                do
+                {
+                    ship = _fleetCreator.CreateShip(shipClass);
 
-        public Player(IBoardCreator boardCreator, IShootCreator shootCreator)
-        {
-            _boardCreator = boardCreator;
-            _shootCreator = shootCreator;
-            _shootCreator.CreatedShoots = ShootHistory;
-        }
+                } while (_primaryBoard.CanPostShip(ship) == false);
 
-        public void ArrangeBoards()
-        {
-            PrimaryBoard = _boardCreator.CreateBoard();
-            TrackingBoard = new Board();
+                _primaryBoard.PostShip(ship);
+            }
         }
 
         public Shoot Shoot()
         {
-            var shoot = _shootCreator.CreateShoot();
-            ShootHistory.Add(shoot);
+            var shoot = _shootingStrategy.NewShoot();
 
-            var shootEventArgs = new ShootEventArgs
-            {
-                Shoot = shoot
-            };
-            OnShoot(shootEventArgs);
+            RaiseOnShoot(shoot);
             return shoot;
         }
 
-        public void TrackShootResult(Shoot lastShoot)
+        public ShootResult ShootResult(Shoot shoot)
         {
-            TrackingBoard.TrackShoot(lastShoot);
+            return _primaryBoard.ShootResult(shoot);
         }
 
-        public void TrackShootResult()
+        public void HandleReceivedShoot(Shoot shoot)
         {
-            var lastShoot = ShootHistory.Last();
-            TrackingBoard.TrackShoot(lastShoot);
-        }
+            _primaryBoard.MarkReceivedShoot(shoot);
 
-        public ShootResult HandleReceivedShoot(Shoot shoot)
-        {
-            return PrimaryBoard.HandleShoot(shoot);
-        }
-
-        public bool Lose
-        {
-            get => PrimaryBoard.AllShipsDestroyed;
-        }
-
-        protected virtual void OnShoot(ShootEventArgs e)
-        {
-            if (Lose == false)
+            if (_primaryBoard.AllShipsDestroyed)
             {
-                ShootEvent?.Invoke(this, e);
-            }
-            else
-            {
-                OnLose(e);
+                RaiseOnLoser();
             }
         }
 
-        protected virtual void OnLose(EventArgs e)
+        public void TrackFiredShootResult(Shoot shoot)
         {
-            LostEvent?.Invoke(this, e);
+            _shootingStrategy.UpdateStrategy(shoot);
         }
 
-        public event EventHandler LostEvent;
+        public Position[] GetPrimaryBoardFlatted()
+        {
+            return _primaryBoard.GetBoardPositionsFlatted();
+        }
 
         public event EventHandler<ShootEventArgs> ShootEvent;
 
+        public event EventHandler Loser;
 
+        private void RaiseOnLoser()
+        {
+            OnLoser();
+        }
+
+        private void RaiseOnShoot(Shoot shoot)
+        {
+            var args = new ShootEventArgs
+            {
+                Shoot = shoot
+            };
+
+            OnShoot(args);
+        }
+
+        protected void OnShoot(ShootEventArgs e)
+        {
+            ShootEvent?.Invoke(this, e);
+        }
+
+        protected void OnLoser()
+        {
+            Loser?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

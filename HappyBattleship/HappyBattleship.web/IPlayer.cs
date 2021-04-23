@@ -8,9 +8,11 @@ namespace HappyBattleship.web
         Shoot Shoot();
         ShootResult ShootResult(Shoot shoot);
         void HandleReceivedShoot(Shoot shoot);
-        void TrackShootResult(Shoot shoot);
+        void TrackFiredShootResult(Shoot shoot);
         Position[] GetPrimaryBoardFlatted();
 
         event EventHandler<ShootEventArgs> ShootEvent;
+
+        event EventHandler Loser;
     }
 }
