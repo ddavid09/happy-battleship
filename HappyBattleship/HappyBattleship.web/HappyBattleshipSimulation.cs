@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace HappyBattleship.web
 {
-    public class Simulation : ISimulation
+    public class HappyBattleshipSimulation : ISimulation
     {
         private IPlayer _leftPlayer;
 
@@ -22,15 +22,13 @@ namespace HappyBattleship.web
 
         public int TurnsInterval { get; set; } = 30;
 
-        public Simulation(IPlayer leftPlayer, IPlayer rightPlayer)
+        public HappyBattleshipSimulation(IPlayer leftPlayer, IPlayer rightPlayer)
         {
             _leftPlayer = leftPlayer;
             _rightPlayer = rightPlayer;
 
             _timer = new Timer(TurnsInterval);
             _timer.AutoReset = true;
-
-            InitSimulationGoingLogic();
         }
 
         public void Start()
@@ -46,6 +44,37 @@ namespace HappyBattleship.web
         public void Stop()
         {
             _timer.Stop();
+        }
+
+        public void Init()
+        {
+            InitSimulationGoingLogic();
+            InitTimer();
+            InitRandomBeginingPlayer();
+            InitFinishSimulationLogic();
+            RaiseOnInitiallised();
+        }
+
+        private void InitRandomBeginingPlayer()
+        {
+            var rand = new Random();
+
+            _turnBelongTo = Convert.ToBoolean(rand.Next(2));
+        }
+
+        private void InitTimer()
+        {
+            _timer.Elapsed += (s, e) =>
+            {
+                if (_turnBelongTo)
+                {
+                    _leftPlayer.Shoot();
+                }
+                else
+                {
+                    _rightPlayer.Shoot();
+                }
+            };
         }
 
         private void InitSimulationGoingLogic()
@@ -78,24 +107,19 @@ namespace HappyBattleship.web
                     _turnBelongTo = !_turnBelongTo;
                 }
             };
+        }
 
-            _timer.Elapsed += (s, e) =>
+        private void InitFinishSimulationLogic()
+        {
+            EventHandler finishAction = (s, e) =>
             {
-                if (_turnBelongTo)
-                {
-                    _leftPlayer.Shoot();
-                }
-                else
-                {
-                    _rightPlayer.Shoot();
-                }
+                Stop();
+                _isFinished = true;
+                RaiseFinished();
             };
 
-            var rand = new Random();
-
-            _turnBelongTo = Convert.ToBoolean(rand.Next(2));
-
-            RaiseOnInitiallised();
+            _leftPlayer.Loser += finishAction;
+            _rightPlayer.Loser += finishAction;
         }
 
         private void RaiseAfterTurn(Shoot shoot, string raiseOnSide)
@@ -132,9 +156,16 @@ namespace HappyBattleship.web
             OnInitilised(args);
         }
 
+        private void RaiseFinished()
+        {
+            OnFinished();
+        }
+
         public event EventHandler<TurnEventArgs> AfterTurn;
 
         public event EventHandler<SimInitialisedEventArgs> Initialised;
+
+        public event EventHandler Finished;
 
         protected virtual void OnAfterTurn(TurnEventArgs e)
         {
@@ -144,6 +175,11 @@ namespace HappyBattleship.web
         protected virtual void OnInitilised(SimInitialisedEventArgs e)
         {
             Initialised?.Invoke(this, e);
+        }
+
+        protected virtual void OnFinished()
+        {
+            Finished?.Invoke(this, EventArgs.Empty);
         }
 
 

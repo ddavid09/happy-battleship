@@ -5,6 +5,7 @@ namespace HappyBattleship.web
 {
     public interface ISimulation
     {
+        void Init();
         void Start();
         void Stop();
         void Pause();
@@ -15,6 +16,8 @@ namespace HappyBattleship.web
         event EventHandler<TurnEventArgs> AfterTurn;
 
         event EventHandler<SimInitialisedEventArgs> Initialised;
+
+        event EventHandler Finished;
 
     }
 }

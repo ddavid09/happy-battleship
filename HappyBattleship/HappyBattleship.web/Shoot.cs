@@ -16,6 +16,13 @@ namespace HappyBattleship.web
 
         private ShootResult _result;
 
+        public Shoot(int x, int y)
+        {
+            X = x;
+            Y = y;
+            _result = ShootResult.NotHandled;
+        }
+
         public int X
         {
             get => _x;

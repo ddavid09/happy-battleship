@@ -8,36 +8,51 @@ namespace HappyBattleship.web
 {
     internal class BattleshipHub : Hub
     {
-        private Simulation _battleShipSimulation;
+        private JsonSerializerSettings _serilizeSettings;
+
+        private ISimulation _battleShipSimulation;
+
+        public BattleshipHub(ISimulation battleShipSimulation)
+        {
+            _battleShipSimulation = battleShipSimulation;
+
+            _serilizeSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            _battleShipSimulation.Initialised += async (s, e) =>
+            {
+                var leftBoardjson = JsonConvert.SerializeObject(e.LeftBoardToDraw, _serilizeSettings);
+                var rightBoardjson = JsonConvert.SerializeObject(e.RightBoardToDraw, _serilizeSettings);
+                await Clients.Caller.SendAsync("InitBoards", leftBoardjson, rightBoardjson);
+            };
+
+            _battleShipSimulation.AfterTurn += async (s, e) =>
+            {
+                var turnChangePositionjson = JsonConvert.SerializeObject(e.PositionToUpdate, _serilizeSettings);
+                var boardToUpdateSide = e.UpdateAtPlayer;
+                await Clients.Caller.SendAsync("HandleNewTurn", boardToUpdateSide, turnChangePositionjson);
+            };
+        }
 
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
+
+            _battleShipSimulation.Init();
         }
 
-        public async Task StartSimulation()
+        public void StartSimulation()
         {
-            do
-            {
-                _battleShipSimulation = new Simulation();
-                _battleShipSimulation.NewTurn += async (s, e) =>
-                {
-                    var settings = new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    };
-                    var bothBoardsJson = JsonConvert.SerializeObject(e.FlatBoardsPositions, settings);
-                    var leftBoardJson = JsonConvert.SerializeObject(e.FlatLeftBoardPosition, settings);
-                    var rightBoardJson = JsonConvert.SerializeObject(e.FlatRightBoardPosition, settings);
-                    await Clients.Caller.SendAsync("updateBoardsState", leftBoardJson, rightBoardJson, bothBoardsJson);
-                    Console.WriteLine("Sent board state");
-                };
-                _battleShipSimulation.Init();
-                _battleShipSimulation.Start();
-                await Task.Run(() => { while (_battleShipSimulation.IsRunning) ; });
-
-            } while (true);
+            _battleShipSimulation.Start();
         }
 
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            _battleShipSimulation.Stop();
+            await base.OnDisconnectedAsync(exception);
+            Dispose();
+        }
     }
 }
