@@ -2,7 +2,6 @@
 {
     public enum ShipDirection
     {
-        Unknown,
         Horizontal,
         Vertical
     }

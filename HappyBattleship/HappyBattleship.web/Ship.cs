@@ -18,6 +18,12 @@ namespace HappyBattleship.web
         public int EndX { get; private set; }
         public int EndY { get; private set; }
 
+        public Ship(ShipClass shipClass, int beginX, int beginY, int endX, int endY)
+            : this(shipClass, SpecifyPositions(beginX, beginY, endX, endY))
+        {
+
+        }
+
         public Ship(ShipClass shipClass, List<Position> coordinates)
         {
             Class = shipClass;
@@ -30,6 +36,28 @@ namespace HappyBattleship.web
             EndY = Coordinates.Last().Y;
 
             Direction = Coordinates.All(p => p.X == StartX) ? ShipDirection.Vertical : ShipDirection.Horizontal;
+        }
+
+        static List<Position> SpecifyPositions(int beginX, int beginY, int endX, int endY)
+        {
+            var positions = new List<Position>();
+
+            if (beginX == endX)
+            {
+                for (var y = beginY; y < endY; y++)
+                {
+                    positions.Add(new Position(beginX, y));
+                }
+            }
+            else if (beginY == endY)
+            {
+                for (var x = beginX; x < endX; x++)
+                {
+                    positions.Add(new Position(x, beginY));
+                }
+            }
+
+            return positions;
         }
 
     }
