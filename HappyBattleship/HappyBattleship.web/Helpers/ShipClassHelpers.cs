@@ -2,7 +2,7 @@
 
 namespace HappyBattleship.web
 {
-    public static class Helpers
+    public static class ShipClassHelpers
     {
         public static int InferShipSize(ShipClass shipClass)
         {

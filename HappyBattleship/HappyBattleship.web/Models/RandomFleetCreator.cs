@@ -24,7 +24,7 @@ namespace HappyBattleship.web
 
             var direction = (ShipDirection)_random.Next(2);
 
-            var shipSize = Helpers.InferShipSize(shipClass);
+            var shipSize = ShipClassHelpers.InferShipSize(shipClass);
 
             if (direction == ShipDirection.Horizontal)
             {
