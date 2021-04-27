@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyBattleship.ConsoleUI",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyBattleship.Library", "HappyBattleship.Library\HappyBattleship.Library.csproj", "{CC22EA32-0AEF-4D33-8803-AC5FFF228E45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyBattleship.Web", "HappyBattleship.Web\HappyBattleship.Web.csproj", "{FCD78AD4-B333-4BBC-A8B5-017CEA8F4B42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{CC22EA32-0AEF-4D33-8803-AC5FFF228E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC22EA32-0AEF-4D33-8803-AC5FFF228E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC22EA32-0AEF-4D33-8803-AC5FFF228E45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCD78AD4-B333-4BBC-A8B5-017CEA8F4B42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD78AD4-B333-4BBC-A8B5-017CEA8F4B42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD78AD4-B333-4BBC-A8B5-017CEA8F4B42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD78AD4-B333-4BBC-A8B5-017CEA8F4B42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
