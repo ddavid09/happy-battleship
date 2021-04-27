@@ -37,20 +37,14 @@ namespace HappyBattleship.Web
             }
             await Groups.AddToGroupAsync(Context.ConnectionId, simulationClientId);
 
-            await Task.Run(() => simulation.Init());
+            simulation.Init();
         }
 
-        public async Task StartSimulation(string simulationClientId)
+        public void StartSimulation(string simulationClientId)
         {
             var simulation = _repository.Simulations.FirstOrDefault(s => s.ClientId == simulationClientId);
-            await Task.Run(() =>
-            {
-                simulation.Start();
-                while (simulation.IsRunning)
-                {
 
-                }
-            });
+            simulation.Start();
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
