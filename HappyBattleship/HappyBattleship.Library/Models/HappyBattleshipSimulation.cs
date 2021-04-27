@@ -26,9 +26,6 @@ namespace HappyBattleship.Library
         {
             _leftPlayer = leftPlayer;
             _rightPlayer = rightPlayer;
-
-            _timer = new Timer(TurnsInterval);
-            _timer.AutoReset = true;
         }
 
         public void Start()
@@ -64,6 +61,9 @@ namespace HappyBattleship.Library
 
         private void InitTimer()
         {
+            _timer = new Timer(TurnsInterval);
+            _timer.AutoReset = true;
+
             _timer.Elapsed += (s, e) =>
             {
                 if (_turnBelongTo)

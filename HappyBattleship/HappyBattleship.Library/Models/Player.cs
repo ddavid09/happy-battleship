@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Serilog;
 using System;
 
 namespace HappyBattleship.Library
@@ -11,11 +11,11 @@ namespace HappyBattleship.Library
 
         private IFleetCreator _fleetCreator;
 
-        private ILogger<Player> _logger;
+        private ILogger _logger;
 
         public string NickName { get; set; }
 
-        public Player(IBoard primaryBoard, IShootingStrategy shootingStrategy, IFleetCreator fleetCreator, ILogger<Player> logger)
+        public Player(IBoard primaryBoard, IShootingStrategy shootingStrategy, IFleetCreator fleetCreator, ILogger logger)
         {
             _primaryBoard = primaryBoard;
             _shootingStrategy = shootingStrategy;
@@ -37,16 +37,16 @@ namespace HappyBattleship.Library
                 _primaryBoard.PostShip(ship);
             }
 
-            _logger.LogInformation($"Player {NickName} is ready battle");
+            _logger.Information($"Player {NickName} is ready battle");
         }
 
         public Shot Shoot()
         {
             var shot = _shootingStrategy.NewShoot();
 
-            RaiseOnShoot(shot);
+            _logger.Information($"Player {NickName} fired shot at x:{shot.X}, y:{shot.Y}");
 
-            _logger.LogInformation($"Player {NickName} fired shot at x:{shot.X}, y:{shot.Y}");
+            RaiseOnShoot(shot);
 
             return shot;
         }
@@ -60,11 +60,11 @@ namespace HappyBattleship.Library
         {
             _primaryBoard.MarkReceivedShoot(shot);
 
-            _logger.LogInformation($"Player {NickName} received shot (x:{shot.X}, y:{shot.Y}) - result: {ShotResult(shot)}");
+            _logger.Information($"Player {NickName} received shot (x:{shot.X}, y:{shot.Y}) - result: {shot.Result}");
 
             if (_primaryBoard.AllShipsDestroyed)
             {
-                _logger.LogInformation($"All fleet of Player {NickName} is destroyed!, {NickName} lost");
+                _logger.Information($"All fleet of Player {NickName} is destroyed!, {NickName} lost");
 
                 RaiseOnLoser();
             }
