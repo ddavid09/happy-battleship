@@ -6,7 +6,7 @@ import RowHeader from "./rowHeader";
 import Square from "./square";
 
 interface BoardProps {
-  hub: HubConnection | null;
+  hub: HubConnection;
   side: string;
 }
 
@@ -23,13 +23,13 @@ const Board = ({ hub, side }: BoardProps) => {
   const [boardPositionsState, setBoardPositionsState] = useState<Position[]>(initState);
 
   useEffect(() => {
-    hub?.on(
-      "updateBoardsState",
-      (leftBoardJson: string, rightBoardJson: string, bothBoardJson: string) => {
+    hub.on(
+      "SimulationInitialised",
+      (leftBoardJson: string, rightBoardJson: string, beginingSide: string) => {
         let newBoardPositions: Position[] = initState;
-        if (side === "Left") {
+        if (side === "left") {
           newBoardPositions = JSON.parse(leftBoardJson);
-        } else if (side === "Right") {
+        } else if (side === "right") {
           newBoardPositions = JSON.parse(rightBoardJson);
         }
 
@@ -37,6 +37,28 @@ const Board = ({ hub, side }: BoardProps) => {
       }
     );
     console.log("new " + side + "board listner created");
+
+    hub.on("HandleNewTurn", (positionToUpdateJson: string, sideToUpdate: string) => {
+      let positionToUpdate: Position = JSON.parse(positionToUpdateJson);
+      console.log("to update: " + positionToUpdateJson + " on " + sideToUpdate + " board");
+      if (side === "left" && sideToUpdate === "left") {
+        setBoardPositionsState((prev) =>
+          prev.map((position) =>
+            position.x === positionToUpdate.x && position.y === positionToUpdate.y
+              ? positionToUpdate
+              : position
+          )
+        );
+      } else if (side === "right" && sideToUpdate === "right") {
+        setBoardPositionsState((prev) =>
+          prev.map((position) =>
+            position.x === positionToUpdate.x && position.y === positionToUpdate.y
+              ? positionToUpdate
+              : position
+          )
+        );
+      }
+    });
   }, []);
 
   return (
