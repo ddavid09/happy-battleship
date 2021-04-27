@@ -84,12 +84,12 @@ namespace HappyBattleship.Library
 
             _leftPlayer.ShootEvent += (s, e) =>
             {
-                var shootResult = _rightPlayer.ShotResult(e.Shot);
-                e.Shot.Result = shootResult;
+                var shotResult = _rightPlayer.ShotResult(e.Shot);
+                e.Shot.Result = shotResult;
                 _rightPlayer.HandleReceivedShot(e.Shot);
-                _leftPlayer.TrackFiredShootResult(e.Shot);
+                _leftPlayer.TrackFiredShotResult(e.Shot);
                 RaiseAfterTurn(e.Shot, "right");
-                if (shootResult == ShootResult.Missed)
+                if (shotResult == ShotResult.Missed)
                 {
                     _turnBelongTo = !_turnBelongTo;
                 }
@@ -99,12 +99,12 @@ namespace HappyBattleship.Library
 
             _rightPlayer.ShootEvent += (s, e) =>
             {
-                var shootResult = _leftPlayer.ShotResult(e.Shot);
-                e.Shot.Result = shootResult;
+                var shotResult = _leftPlayer.ShotResult(e.Shot);
+                e.Shot.Result = shotResult;
                 _leftPlayer.HandleReceivedShot(e.Shot);
-                _rightPlayer.TrackFiredShootResult(e.Shot);
+                _rightPlayer.TrackFiredShotResult(e.Shot);
                 RaiseAfterTurn(e.Shot, "left");
-                if (shootResult == ShootResult.Missed)
+                if (shotResult == ShotResult.Missed)
                 {
                     _turnBelongTo = !_turnBelongTo;
                 }
@@ -131,9 +131,9 @@ namespace HappyBattleship.Library
             var args = new TurnEventArgs();
             var positionToUpdate = new Position(shoot.X, shoot.Y);
 
-            var shootResult = shoot.Result;
+            var shotResult = shoot.Result;
 
-            if (shootResult == ShootResult.Hit || shootResult == ShootResult.HitDestroyed)
+            if (shotResult == ShotResult.Hit || shotResult == ShotResult.HitDestroyed)
             {
                 positionToUpdate.State = PositionState.Hit;
             }

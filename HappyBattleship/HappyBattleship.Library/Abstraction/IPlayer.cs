@@ -9,7 +9,7 @@ namespace HappyBattleship.Library
         Shot Shoot();
         ShotResult ShotResult(Shot shoot);
         void HandleReceivedShot(Shot shoot);
-        void TrackFiredShootResult(Shot shoot);
+        void TrackFiredShotResult(Shot shoot);
         Position[] GetPrimaryBoardFlatted();
 
         event EventHandler<ShotEventArgs> ShootEvent;

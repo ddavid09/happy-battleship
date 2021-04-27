@@ -1,6 +1,6 @@
-﻿namespace HappyBattleship.web
+﻿namespace HappyBattleship.Library
 {
-    public enum ShootResult
+    public enum ShotResult
     {
         NotHandled,
         Missed,

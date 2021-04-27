@@ -105,15 +105,15 @@ namespace HappyBattleship.Library
 
             switch (result)
             {
-                case Library.ShootResult.Missed:
+                case Library.ShotResult.Missed:
                     _positions[shoot.X, shoot.Y].State = PositionState.Missed;
                     break;
-                case Library.ShootResult.Hit:
-                case Library.ShootResult.HitDestroyed:
+                case Library.ShotResult.Hit:
+                case Library.ShotResult.HitDestroyed:
                     _positions[shoot.X, shoot.Y].State = PositionState.Hit;
                     break;
-                case Library.ShootResult.NotHandled:
-                case Library.ShootResult.NoSense:
+                case Library.ShotResult.NotHandled:
+                case Library.ShotResult.NoSense:
                 default:
                     throw new InvalidOperationException();
             }

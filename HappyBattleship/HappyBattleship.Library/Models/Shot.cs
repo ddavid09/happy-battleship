@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace HappyBattleship.web
+namespace HappyBattleship.Library
 {
-    public class Shoot
+    public class Shot
     {
         private bool _xWasSet;
 
@@ -14,13 +14,13 @@ namespace HappyBattleship.web
 
         private int _y;
 
-        private ShootResult _result;
+        private ShotResult _result;
 
-        public Shoot(int x, int y)
+        public Shot(int x, int y)
         {
             X = x;
             Y = y;
-            _result = ShootResult.NotHandled;
+            _result = ShotResult.NotHandled;
         }
 
         public int X
@@ -55,7 +55,7 @@ namespace HappyBattleship.web
                 }
             }
         }
-        public ShootResult Result
+        public ShotResult Result
         {
             get => _result; set
             {

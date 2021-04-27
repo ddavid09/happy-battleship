@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace HappyBattleship.Library
 {
@@ -72,7 +70,7 @@ namespace HappyBattleship.Library
             }
         }
 
-        public void TrackFiredShootResult(Shot shoot)
+        public void TrackFiredShotResult(Shot shoot)
         {
             _shootingStrategy.UpdateStrategy(shoot);
         }

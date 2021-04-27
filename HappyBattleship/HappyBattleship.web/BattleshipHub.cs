@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
 
-namespace HappyBattleship.web
+namespace HappyBattleship.Library
 {
     internal class BattleshipHub : Hub
     {
